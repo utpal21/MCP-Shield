@@ -1,0 +1,89 @@
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Tenant {
+  id         String     @id @default(cuid())
+  name       String
+  plan       Plan       @default(FREE)
+  createdAt  DateTime   @default(now())
+  apiKeys    ApiKey[]
+  policies   Policy[]
+  auditLogs  AuditLog[]
+  usageStats UsageStat[]
+}
+
+enum Plan {
+  FREE
+  PRO
+  ENTERPRISE
+}
+
+model ApiKey {
+  id         String   @id @default(cuid())
+  key        String   @unique
+  tenantId   String
+  tenant     Tenant   @relation(fields: [tenantId], references: [id])
+  label      String?
+  active     Boolean  @default(true)
+  rateLimit  Int      @default(100)   // requests per minute
+  createdAt  DateTime @default(now())
+  lastUsedAt DateTime?
+  auditLogs  AuditLog[]
+}
+
+model Policy {
+  id         String   @id @default(cuid())
+  tenantId   String
+  tenant     Tenant   @relation(fields: [tenantId], references: [id])
+  name       String
+  ruleType   String
+  ruleValue  Json
+  enabled    Boolean  @default(true)
+  priority   Int      @default(100)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  @@unique([tenantId, name])
+}
+
+model AuditLog {
+  id           String     @id @default(cuid())
+  tenantId     String
+  tenant       Tenant     @relation(fields: [tenantId], references: [id])
+  apiKeyId     String
+  apiKey       ApiKey     @relation(fields: [apiKeyId], references: [id])
+  tool         String
+  requestHash  String
+  statusCode   Int?
+  status       LogStatus
+  latencyMs    Int?
+  details      Json?
+  createdAt    DateTime   @default(now())
+  @@index([tenantId, createdAt])
+  @@index([tenantId, tool])
+}
+
+model UsageStat {
+  id           String   @id @default(cuid())
+  tenantId     String
+  tenant       Tenant   @relation(fields: [tenantId], references: [id])
+  month        String   // Format: YYYY-MM
+  callCount    Int      @default(0)
+  toolBreakdown Json     // Record<toolName, count>
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  @@unique([tenantId, month])
+  @@index([tenantId, month])
+}
+
+enum LogStatus {
+  success
+  error
+  blocked
+}

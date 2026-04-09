@@ -1,0 +1,45 @@
+{
+    "id": "mcp-shield",
+    "name": "MCP Shield",
+    "version": "1.0.0",
+    "description": "Security, policy enforcement, and observability layer for MCP agents. Proxy external tools safely with rate limiting, PII scanning, and audit logs.",
+    "category": "security",
+    "tags": [
+        "security",
+        "proxy",
+        "observability",
+        "policy",
+        "rate-limit"
+    ],
+    "pricing": {
+        "model": "usage",
+        "tiers": [
+            {
+                "name": "Free",
+                "price": 0,
+                "calls_per_day": 500
+            },
+            {
+                "name": "Pro",
+                "price": 19,
+                "calls_per_day": 10000
+            },
+            {
+                "name": "Enterprise",
+                "price": 99,
+                "calls_per_day": -1
+            }
+        ]
+    },
+    "endpoints": {
+        "tools": "/tools",
+        "call": "/call",
+        "sse": "/sse",
+        "health": "/health"
+    },
+    "auth": [
+        "api_key",
+        "oauth2"
+    ],
+    "mcpProtocolVersion": "2024-11-05"
+}

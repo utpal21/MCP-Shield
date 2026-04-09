@@ -1,0 +1,48 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "declaration": true,
+        "removeComments": true,
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "allowSyntheticDefaultImports": true,
+        "target": "ES2021",
+        "sourceMap": true,
+        "outDir": "./dist",
+        "baseUrl": "./",
+        "incremental": true,
+        "skipLibCheck": true,
+        "strict": true,
+        "noImplicitAny": true,
+        "strictNullChecks": true,
+        "strictFunctionTypes": true,
+        "noUncheckedIndexedAccess": true,
+        "noImplicitOverride": true,
+        "noPropertyAccessFromIndexSignature": true,
+        "forceConsistentCasingInFileNames": true,
+        "paths": {
+            "@/auth/*": [
+                "src/auth/*"
+            ],
+            "@/mcp/*": [
+                "src/mcp/*"
+            ],
+            "@/tools/*": [
+                "src/tools/*"
+            ],
+            "@/common/*": [
+                "src/common/*"
+            ],
+            "@/config/*": [
+                "src/config/*"
+            ]
+        }
+    },
+    "exclude": [
+        "node_modules",
+        "dist",
+        "test",
+        "**/*.spec.ts",
+        "**/*.e2e-spec.ts"
+    ]
+}
