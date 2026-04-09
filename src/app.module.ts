@@ -11,9 +11,11 @@ import { UsageModule } from './usage/usage.module';
 import { WebhooksModule } from './webhooks/webhooks.module';
 import { AdminModule } from './admin/admin.module';
 import { HealthModule } from './health/health.module';
+import { ConfigModule } from './config/config.module';
 
 @Module({
     imports: [
+        ConfigModule,
         PrismaModule,
         RedisModule,
         SecurityModule,
