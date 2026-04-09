@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule } from '../config/config.module';
 import { ApiKeyStrategy } from './api-key.strategy';
 import { JwtStrategy } from './jwt.strategy';
 import { CombinedAuthGuard } from './auth.guard';

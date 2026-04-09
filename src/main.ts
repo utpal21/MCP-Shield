@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe, Logger, INestApplication } from '@nestjs/common';
 import helmet from 'helmet';
 import express, { Request, Response, NextFunction } from 'express';
+import { raw as bodyParserRaw, json as bodyParserJson } from 'body-parser';
 import { AppModule } from './app.module';
 import { MCPExceptionFilter } from './common/filters/mcp-exception.filter';
 import { ConfigurationService } from './config/configuration';
@@ -63,13 +64,13 @@ async function bootstrap(): Promise<void> {
     });
 
     // Raw body middleware for webhooks (must be before json parser)
-    (app as any).use('/webhooks', express.raw({ type: 'application/json', limit: '256kb' }), (req: Request, _res: Response, next: NextFunction) => {
-        (req as any).rawBody = req.body;
+    app.use('/webhooks', bodyParserRaw({ type: 'application/json', limit: '256kb' }), (req: any, _res: Response, next: NextFunction) => {
+        req.rawBody = req.body;
         next();
     });
 
     // Request body size limit
-    app.use(express.json({ limit: '256kb' }));
+    app.use(bodyParserJson({ limit: '256kb' }));
 
     // Global validation pipe
     app.useGlobalPipes(

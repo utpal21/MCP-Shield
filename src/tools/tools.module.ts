@@ -5,9 +5,10 @@ import { PolicyToolService } from './policy/policy.tool';
 import { SecurityToolService } from './security/security.tool';
 import { PolicyModule } from '../policy/policy.module';
 import { LoggingModule } from '../logging/logging.module';
+import { SecurityModule } from '../security/security.module';
 
 @Module({
-    imports: [PolicyModule, LoggingModule],
+    imports: [PolicyModule, LoggingModule, SecurityModule],
     providers: [
         ProxyToolService,
         LogsToolService,

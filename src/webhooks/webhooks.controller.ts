@@ -32,12 +32,12 @@ export class WebhooksController {
         req: RequestWithRawBody,
     ): Promise<{ status: string }> {
         // Verify HMAC signature
-        const sig = (req.headers.get('x-mcpize-signature') as string | undefined);
+        const sig = (req.headers as any)['x-mcpize-signature'] as string | undefined;
         if (!sig) {
             throw new UnauthorizedException('Missing signature');
         }
 
-        const rawBody = (req as RequestWithRawBody).rawBody;
+        const rawBody = req.rawBody;
         if (!rawBody) {
             throw new UnauthorizedException('Missing request body');
         }
@@ -82,7 +82,7 @@ export class WebhooksController {
             return;
         }
 
-        await this.prisma.tenant.update({
+        await this.prisma['tenant'].update({
             where: { id: tenantId },
             data: { plan },
         });
@@ -92,7 +92,7 @@ export class WebhooksController {
 
     private async handleTenantCreated(tenantId: string, data: Record<string, unknown>): Promise<void> {
         // Verify tenant exists or create if needed
-        const existing = await this.prisma.tenant.findUnique({
+        const existing = await this.prisma['tenant'].findUnique({
             where: { id: tenantId },
         });
 
@@ -101,7 +101,7 @@ export class WebhooksController {
             return;
         }
 
-        await this.prisma.tenant.create({
+        await this.prisma['tenant'].create({
             data: {
                 id: tenantId,
                 name: (data['name'] as string) || 'Unknown',
@@ -113,7 +113,7 @@ export class WebhooksController {
     }
 
     private async handleTenantDeleted(tenantId: string): Promise<void> {
-        await this.prisma.tenant.delete({
+        await this.prisma['tenant'].delete({
             where: { id: tenantId },
         });
 
