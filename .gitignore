@@ -19,6 +19,9 @@
 .env.test.local
 .env.production.local
 
+# MCPize secrets
+mcpize-secrets.txt
+
 # logs
 npm-debug.log*
 yarn-debug.log*
