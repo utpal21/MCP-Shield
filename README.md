@@ -1,5 +1,7 @@
 # MCP Shield
 
+[![MCPize](https://mcpize.com/badge/@utpal.uoda/mcp-shield)](https://mcpize.com/mcp/mcp-shield)
+
 A production-grade, monetisable MCP (Model Context Protocol) server SaaS product that provides AI agents and LLM orchestrators with a secure, observable, policy-enforced proxy layer.
 
 ## Features
@@ -123,6 +125,16 @@ npm run prisma:migrate
 # Start development server
 npm run start:dev
 ```
+
+## Connect via MCPize
+
+Use this MCP server instantly with no local installation:
+
+```bash
+npx -y mcpize connect @utpal.uoda/mcp-shield --client claude
+```
+
+Or connect at: **https://mcpize.com/mcp/mcp-shield**
 
 ## Configuration
 
