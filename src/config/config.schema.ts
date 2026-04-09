@@ -3,8 +3,8 @@ import { z } from 'zod';
 export const configSchema = z.object({
     NODE_ENV: z.enum(['development', 'test', 'production']).default('production'),
     PORT: z.coerce.number().default(3000),
-    DATABASE_URL: z.string().min(1),
-    REDIS_URL: z.string().min(1),
+    DATABASE_URL: z.string().optional(),
+    REDIS_URL: z.string().optional(),
     JWT_PUBLIC_KEY: z.string().min(1),
     JWT_ISSUER: z.string().min(1),
     API_KEY_SALT: z.string().min(32),

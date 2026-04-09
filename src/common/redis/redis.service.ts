@@ -10,9 +10,18 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
     constructor(private readonly config: ConfigurationService) { }
 
     async onModuleInit(): Promise<void> {
+        const redisUrl = this.config.get('REDIS_URL');
+
+        // Skip Redis initialization if URL is not provided (MCPize will provide it)
+        if (!redisUrl) {
+            this.logger.warn('REDIS_URL not configured - Redis features will be unavailable');
+            this.client = null;
+            return;
+        }
+
         try {
             // Try to connect but don't fail if connection string is invalid
-            this.client = new Redis(this.config.get('REDIS_URL'));
+            this.client = new Redis(redisUrl);
 
             // Test connection with a simple PING
             await this.client.ping();
@@ -29,14 +38,8 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
 
             this.logger.log('Redis connected successfully');
         } catch (error: any) {
-            // If connection string is placeholder or invalid, log warning but don't crash
-            if (this.config.get('REDIS_URL').includes('placeholder') || error.code === 'ECONNREFUSED') {
-                this.logger.warn('Redis connection failed - using placeholder or invalid URL. Redis features will be unavailable.');
-                this.client = null;
-            } else {
-                this.logger.warn(`Redis connection failed: ${error.message}. Redis features will be unavailable.`);
-                this.client = null;
-            }
+            this.logger.warn(`Redis connection failed: ${error.message}. Redis features will be unavailable.`);
+            this.client = null;
         }
     }
 
