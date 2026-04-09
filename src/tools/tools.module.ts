@@ -4,9 +4,10 @@ import { LogsToolService } from './logs/logs.tool';
 import { PolicyToolService } from './policy/policy.tool';
 import { SecurityToolService } from './security/security.tool';
 import { PolicyModule } from '../policy/policy.module';
+import { LoggingModule } from '../logging/logging.module';
 
 @Module({
-    imports: [PolicyModule],
+    imports: [PolicyModule, LoggingModule],
     providers: [
         ProxyToolService,
         LogsToolService,
