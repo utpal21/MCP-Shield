@@ -16,7 +16,6 @@ import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { SSEService } from './sse/sse.service';
 
 @Controller()
-@UseGuards(CombinedAuthGuard)
 export class McpController {
     constructor(
         private mcpService: McpService,

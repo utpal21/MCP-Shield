@@ -8,8 +8,19 @@
         "security",
         "proxy",
         "observability",
+        "monitoring",
         "policy",
-        "rate-limit"
+        "rate-limit",
+        "pii-scanning",
+        "prompt-injection",
+        "ssrf-protection",
+        "audit-logging",
+        "auth",
+        "oauth",
+        "enterprise",
+        "compliance",
+        "ai-safety",
+        "llm-security"
     ],
     "pricing": {
         "model": "usage",
