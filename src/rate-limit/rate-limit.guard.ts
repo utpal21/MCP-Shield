@@ -52,11 +52,16 @@ export class RateLimitGuard implements CanActivate {
     }
 
     async checkLimit(apiKeyId: string, limitPerMinute: number): Promise<boolean> {
+        const client = this.redis.getClient();
+
+        // If Redis is not available, allow all requests (fail open)
+        if (!client) {
+            return true;
+        }
+
         const now = Date.now();
         const window = 60_000; // 1 minute
         const key = `shield:ratelimit:${apiKeyId}`;
-
-        const client = this.redis.getClient();
 
         // Remove entries outside the window
         await client.zremrangebyscore(key, 0, now - window);
@@ -75,7 +80,14 @@ export class RateLimitGuard implements CanActivate {
     }
 
     async getCurrentCount(apiKeyId: string): Promise<number> {
+        const client = this.redis.getClient();
+
+        // If Redis is not available, return 0
+        if (!client) {
+            return 0;
+        }
+
         const key = `shield:ratelimit:${apiKeyId}`;
-        return this.redis.zcard(key);
+        return client.zcard(key);
     }
 }
