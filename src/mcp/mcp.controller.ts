@@ -22,6 +22,53 @@ export class McpController {
         private sseService: SSEService,
     ) { }
 
+    @Post('mcp')
+    @UseGuards(RateLimitGuard)
+    async handleMcpRequest(
+        @Req() req: Request,
+        @Res({ passthrough: true }) res: Response,
+        @Body() body: any,
+        @CurrentUser() user: any,
+    ) {
+        // Validate JSON-RPC request
+        const validation = await this.mcpService.validateRequest(body);
+        if (!validation.valid) {
+            return res.status(400).json({
+                jsonrpc: '2.0',
+                error: {
+                    code: -32600,
+                    message: validation.error,
+                },
+                id: body.id || null,
+            });
+        }
+
+        // Handle different MCP methods
+        switch (body.method) {
+            case 'tools/list':
+            case 'tools/call':
+                // For tool calls, body.params contains the tool name and arguments
+                const response = await this.mcpService.handleToolCall(
+                    user,
+                    null,
+                    body.method === 'tools/list' ? { name: 'list' } : body.params,
+                    body.id,
+                );
+                const statusCode = response.error ? this.getStatusCode(response.error.code) : 200;
+                return res.status(statusCode).json(response);
+
+            default:
+                return res.status(404).json({
+                    jsonrpc: '2.0',
+                    error: {
+                        code: -32601,
+                        message: `Method not found: ${body.method}`,
+                    },
+                    id: body.id || null,
+                });
+        }
+    }
+
     @Get('tools')
     async getTools() {
         return this.mcpService.getManifest();
