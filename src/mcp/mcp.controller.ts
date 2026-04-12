@@ -73,11 +73,13 @@ export class McpController {
                         id: body.id || null,
                     });
                 }
-                // Return tool manifest
+                // Return only tools array (MCP protocol requires this format)
                 return res.status(200).json({
                     jsonrpc: '2.0',
                     id: body.id,
-                    result: this.mcpService.getManifest(),
+                    result: {
+                        tools: this.mcpService.getManifest().tools,
+                    },
                 });
 
             case 'tools/call':
