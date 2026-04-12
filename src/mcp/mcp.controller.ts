@@ -23,7 +23,6 @@ export class McpController {
     ) { }
 
     @Post('mcp')
-    @UseGuards(RateLimitGuard)
     async handleMcpRequest(
         @Req() req: Request,
         @Res({ passthrough: true }) res: Response,
@@ -45,13 +44,59 @@ export class McpController {
 
         // Handle different MCP methods
         switch (body.method) {
+            case 'initialize':
+                // Initialize connection - return server info (no auth/Redis required)
+                return res.status(200).json({
+                    jsonrpc: '2.0',
+                    id: body.id,
+                    result: {
+                        protocolVersion: '2024-11-05',
+                        capabilities: {
+                            tools: {},
+                        },
+                        serverInfo: {
+                            name: 'mcp-shield',
+                            version: '1.0.0',
+                        },
+                    },
+                });
+
             case 'tools/list':
+                // For tools/list, check if user is authenticated
+                if (!user) {
+                    return res.status(401).json({
+                        jsonrpc: '2.0',
+                        error: {
+                            code: -32001,
+                            message: 'Unauthorized',
+                        },
+                        id: body.id || null,
+                    });
+                }
+                // Return tool manifest
+                return res.status(200).json({
+                    jsonrpc: '2.0',
+                    id: body.id,
+                    result: this.mcpService.getManifest(),
+                });
+
             case 'tools/call':
-                // For tool calls, body.params contains the tool name and arguments
+                // For tool calls, user must be authenticated and pass rate limit
+                if (!user) {
+                    return res.status(401).json({
+                        jsonrpc: '2.0',
+                        error: {
+                            code: -32001,
+                            message: 'Unauthorized',
+                        },
+                        id: body.id || null,
+                    });
+                }
+                // For tool calls, body.params contains tool name and arguments
                 const response = await this.mcpService.handleToolCall(
                     user,
                     null,
-                    body.method === 'tools/list' ? { name: 'list' } : body.params,
+                    body.params,
                     body.id,
                 );
                 const statusCode = response.error ? this.getStatusCode(response.error.code) : 200;
