@@ -23,22 +23,30 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
             // Try to connect but don't fail if connection string is invalid
             this.client = new Redis(redisUrl);
 
-            // Test connection with a simple PING
-            await this.client.ping();
+            // Set up connection handlers to log status asynchronously
+            this.client.on('connect', () => {
+                this.logger.log('Redis connected successfully');
+            });
 
-            // Load blocklist seeds only if connected successfully
+            this.client.on('error', (error) => {
+                this.logger.warn(`Redis connection error: ${error.message}`);
+            });
+
+            // Load blocklist seeds asynchronously (don't block startup)
             const blocklistSeed = this.config.get('SCAN_BLOCKLIST_DOMAINS');
             if (blocklistSeed && blocklistSeed.length > 0) {
                 const domains = blocklistSeed.filter((d) => d.trim().length > 0);
                 if (domains.length > 0) {
-                    await this.client.sadd('shield:blocklist:domains', ...domains);
-                    this.logger.log(`Loaded ${domains.length} domains to blocklist`);
+                    // Fire and forget - don't await to avoid blocking startup
+                    this.client.sadd('shield:blocklist:domains', ...domains)
+                        .then(() => this.logger.log(`Loaded ${domains.length} domains to blocklist`))
+                        .catch((err) => this.logger.warn(`Failed to load blocklist: ${err.message}`));
                 }
             }
 
-            this.logger.log('Redis connected successfully');
+            this.logger.log('Redis client initialized');
         } catch (error: any) {
-            this.logger.warn(`Redis connection failed: ${error.message}. Redis features will be unavailable.`);
+            this.logger.warn(`Redis initialization failed: ${error.message}. Redis features will be unavailable.`);
             this.client = null;
         }
     }
