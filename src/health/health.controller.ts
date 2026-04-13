@@ -23,4 +23,12 @@ export class HealthController {
             () => this.redis.isHealthy('redis'),
         ]);
     }
+
+    @Get('ping')
+    async ping() {
+        return {
+            status: 'ok',
+            timestamp: new Date().toISOString(),
+        };
+    }
 }
