@@ -22,6 +22,19 @@ export class McpController {
         private sseService: SSEService,
     ) { }
 
+    // Root MCP endpoint - for MCPize compatibility (expects /)
+    @Post('/')
+    async handleRootMcpRequest(
+        @Req() req: Request,
+        @Res({ passthrough: true }) res: Response,
+        @Body() body: any,
+        @CurrentUser() user: any,
+    ) {
+        // Delegate to existing MCP handler
+        return this.handleMcpRequest(req, res, body, user);
+    }
+
+    // /mcp endpoint - for backward compatibility and direct access
     @Post('mcp')
     async handleMcpRequest(
         @Req() req: Request,
