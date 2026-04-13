@@ -75,15 +75,16 @@ export class McpController {
                 });
 
             case 'tools/list':
-                // For tools/list, check if user is authenticated
+                // For tools/list, return tools even without auth (for marketplace discovery)
+                // Proxy servers often have dynamic tools that require auth for actual calls
                 if (!user) {
-                    return res.status(401).json({
+                    // Return tools list without auth for discovery
+                    return res.status(200).json({
                         jsonrpc: '2.0',
-                        error: {
-                            code: -32001,
-                            message: 'Unauthorized',
+                        id: body.id,
+                        result: {
+                            tools: this.mcpService.getManifest().tools,
                         },
-                        id: body.id || null,
                     });
                 }
                 // Return only tools array (MCP protocol requires this format)
@@ -92,6 +93,26 @@ export class McpController {
                     id: body.id,
                     result: {
                         tools: this.mcpService.getManifest().tools,
+                    },
+                });
+
+            case 'resources/list':
+                // Return empty resources array (not implemented)
+                return res.status(200).json({
+                    jsonrpc: '2.0',
+                    id: body.id,
+                    result: {
+                        resources: [],
+                    },
+                });
+
+            case 'prompts/list':
+                // Return empty prompts array (not implemented)
+                return res.status(200).json({
+                    jsonrpc: '2.0',
+                    id: body.id,
+                    result: {
+                        prompts: [],
                     },
                 });
 
