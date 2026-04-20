@@ -1,54 +1,17 @@
-# mcpize.yaml
+# MCPize Configuration
+# Docs: https://mcpize.com/docs/mcpize-yaml
+
 version: 1
-name: mcp-shield
-description: |
-  Security, policy enforcement, and observability proxy for MCP agents.
-  Blocks SSRF, scans for PII and prompt injection, enforces custom rules,
-  rate limits, and provides full audit logging. Works with any MCP client.
+
+name: "mcp-shield"
+slug: "mcp-shield"
 
 runtime: typescript
-entry: src/main.ts
 
 build:
-  install: npm ci
-  command: npm run build
+  install: "npm ci"
+  command: "npm run build"
 
-startCommand:
+start:
   type: http
-  command: node dist/main.js
-
-# Publisher secrets — infrastructure credentials.
-# Values are set in the MCPize Dashboard:
-# https://mcpize.com/developer/servers/mcp-shield/settings
-# MCPize injects these as environment variables at runtime.
-secrets:
-  - name: DATABASE_URL
-    required: true
-    description: PostgreSQL connection string (e.g. postgresql://user:pass@host/db)
-  - name: REDIS_URL
-    required: true
-    description: Redis connection string (e.g. redis://host:6379)
-  - name: JWT_PUBLIC_KEY
-    required: true
-    description: RS256 public key PEM for OAuth2 JWT verification
-  - name: JWT_ISSUER
-    required: true
-    description: JWT issuer URL (e.g. https://auth.mcpize.com)
-  - name: API_KEY_SALT
-    required: true
-    description: 32+ character random string for API key hashing
-  - name: MCPIZE_WEBHOOK_SECRET
-    required: true
-    description: HMAC secret from MCPize Dashboard for webhook verification
-  - name: CORS_ORIGINS
-    required: false
-    description: Comma-separated allowed CORS origins (default mcpize.run domains)
-  - name: ALLOWED_ORIGINS
-    required: false
-    description: Comma-separated allowed MCP Origin header values
-  - name: SCAN_BLOCKLIST_DOMAINS
-    required: false
-    description: Comma-separated domains to block in security scans
-
-# NOTE: Pricing tiers are configured in the MCPize Dashboard — not in this file.
-# After deploy, go to: mcpize.com/developer/servers/mcp-shield/pricing
+  command: "node dist/main.js"
